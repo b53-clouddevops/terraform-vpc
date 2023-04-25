@@ -8,5 +8,4 @@ module "vpc" {
   DEFAULT_VPC_ID         = var.DEFAULT_VPC_ID
   DEFAULT_VPC_CIDR       = var.DEFAULT_VPC_CIDR
   DEFAULT_VPC_RT         = var.DEFAULT_VPC_RT
-
 }
