@@ -4,7 +4,7 @@
 
 // @Library('pipeline-utility-steps') _
 
-STAGE_R_LOG_FILE = 'stage_R.log'
+// STAGE_R_LOG_FILE = 'stage_R.log'
 
     pipeline {
         agent any 
@@ -34,8 +34,7 @@ STAGE_R_LOG_FILE = 'stage_R.log'
                 //     parameters {
                 //         booleanParam(name: 'Apply?', defaultValue: false, description: 'True to proceed further')
                 //     }
-                // }
-                steps {       
+                // }    
                     steps {
                         input message: 'Approve the build?',
                         submitter: currentUser(),
