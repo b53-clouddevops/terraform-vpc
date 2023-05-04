@@ -5,6 +5,8 @@ pipeline {
             steps {
                     sh "echo This is stage 1"
                     sh "ls -latr ${WORKSPACE}"
+                    sh "date"
+                    sh "cat $WORKSPACE/build.log"
             }
         }
         stage('Stage 2') {
