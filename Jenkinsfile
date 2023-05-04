@@ -2,6 +2,8 @@
 // env.REPONAME="terraform-vpc"
 // terraform()
 
+STAGE_R_LOG_FILE = 'stage_R.log'
+
     pipeline {
         agent any 
         parameters { 
@@ -24,14 +26,20 @@
                 }
             }
 
-            stage('Did you review the plan?') {
+            stage('R Did you review the plan?') {
                 input {
                     message 'Did you review'
                     parameters {
                         booleanParam(name: 'Apply?', defaultValue: false, description: 'True to proceed further')
                     }
                 }
-                steps { sh "echo Proceeding To Apple" }
+                steps {                     
+                script {
+                    tee(STAGE_R_LOG_FILE) {
+                        sh "echo Proceeding To Apple"
+                        echo 'print some Stage_A log content ...'
+                    }
+                }
             }
 
             stage('Terraform Apply ') {
