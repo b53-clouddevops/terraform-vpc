@@ -109,52 +109,97 @@
 // it means there were duplicates, and an error is thrown.
 
 
-def approvers = []
+// def approvers = []
+
+// pipeline {
+//     agent any
+    
+//     stages {
+//         stage('Stage 1') {
+//             steps {
+//                 script {
+//                     // Add approvers for stage 1
+//                     approvers.add('admin')
+//                     approvers.add('mvp2612')
+//                 }
+//                 input message: 'Proceed with Stage 1?', submitter: approvers.join(', ')
+//             }
+//         }
+        
+//         stage('Stage 2') {
+//             steps {
+//                 script {
+//                     // Add approvers for stage 2
+//                     approvers.add('user3')
+//                     approvers.add('user4')
+//                 }
+//                 input message: 'Proceed with Stage 2?', submitter: approvers.join(', ')
+//             }
+//         }
+//     }
+    
+//     post {
+//         always {
+//             // Check for unique approvers across all stages
+//             def uniqueApprovers = approvers.unique()
+//             if (uniqueApprovers.size() != approvers.size()) {
+//                 error "Approvers must be unique across all stages"
+//             }
+//         }
+//     }
+// }
+
+
+
 
 pipeline {
     agent any
-    
+
     stages {
-        stage('Stage 1') {
+        stage('Deploy to Staging') {
             steps {
-                script {
-                    // Add approvers for stage 1
-                    approvers.add('admin')
-                    approvers.add('mvp2612')
-                }
-                input message: 'Proceed with Stage 1?', submitter: approvers.join(', ')
+                echo 'Deploying to staging environment...'
+            }
+            input {
+                message "Do you want to deploy to staging?"
+                submitterParameter 'approver_stage1'
+                submitterParameter 'approver_stage2'
+                submitterParameter 'approver_stage3'
+                id 'stage1'
+                ok 'Deploy'
+                reject 'Cancel'
+                additionalParams [
+                    [$class: 'ChoiceParameter', 
+                     name: 'environment', 
+                     choices: ['test', 'prod'], 
+                     description: 'Choose the environment to deploy to']
+                ]
+                unique true
             }
         }
-        
-        stage('Stage 2') {
+
+        stage('Deploy to Production') {
             steps {
-                script {
-                    // Add approvers for stage 2
-                    approvers.add('user3')
-                    approvers.add('user4')
-                }
-                input message: 'Proceed with Stage 2?', submitter: approvers.join(', ')
+                echo 'Deploying to production environment...'
             }
-        }
-    }
-    
-    post {
-        always {
-            // Check for unique approvers across all stages
-            def uniqueApprovers = approvers.unique()
-            if (uniqueApprovers.size() != approvers.size()) {
-                error "Approvers must be unique across all stages"
+            input {
+                message "Do you want to deploy to production?"
+                submitterParameter 'approver_stage4'
+                submitterParameter 'approver_stage5'
+                id 'stage2'
+                ok 'Deploy'
+                reject 'Cancel'
+                additionalParams [
+                    [$class: 'ChoiceParameter', 
+                     name: 'environment', 
+                     choices: ['test', 'prod'], 
+                     description: 'Choose the environment to deploy to']
+                ]
+                unique true
             }
         }
     }
 }
-
-
-
-
-
-
-
 
 
 
