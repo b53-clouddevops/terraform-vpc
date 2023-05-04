@@ -13,6 +13,7 @@ pipeline {
         stage('Stage 2') {
             steps {
                     sh "echo This is stage 2"
+                    sh "cat $WORKSPACE/build.log"
             }
         }
     }
