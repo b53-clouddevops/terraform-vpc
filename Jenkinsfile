@@ -67,35 +67,35 @@
 
 
 
-pipeline {
-    agent any
+// pipeline {
+//     agent any
     
-    stages {
-        stage('Stage 1') {
-            steps {
-                input message: 'Proceed with Stage 1?', submitter: 'admin', id: 'stage1input'
-                sh "echo I am stage 1"
-            }
-        }
-        stage('Stage 2') {
-            steps {
-                script {
-                    def stage1approvers = input(id: 'stage1input', message: 'Approve Stage 1:', submitterParameter: 'stage1approvers')
-                    def stage2approvers = input(message: 'Approve Stage 2:', submitterParameter: 'stage2approvers')
+//     stages {
+//         stage('Stage 1') {
+//             steps {
+//                 input message: 'Proceed with Stage 1?', submitter: 'admin', id: 'stage1input'
+//                 sh "echo I am stage 1"
+//             }
+//         }
+//         stage('Stage 2') {
+//             steps {
+//                 script {
+//                     def stage1approvers = input(id: 'stage1input', message: 'Approve Stage 1:', submitterParameter: 'stage1approvers')
+//                     def stage2approvers = input(message: 'Approve Stage 2:', submitterParameter: 'stage2approvers')
                     
-                    def allApprovers = new HashSet()
-                    allApprovers.addAll(stage1approvers)
-                    allApprovers.addAll(stage2approvers)
+//                     def allApprovers = new HashSet()
+//                     allApprovers.addAll(stage1approvers)
+//                     allApprovers.addAll(stage2approvers)
                     
-                    if (allApprovers.size() < (stage1approvers.size() + stage2approvers.size())) {
-                        error "Duplicate approvers found"
-                    }
-                }
-                sh "echo I am stage 2"
-            }
-        }
-    }
-}
+//                     if (allApprovers.size() < (stage1approvers.size() + stage2approvers.size())) {
+//                         error "Duplicate approvers found"
+//                     }
+//                 }
+//                 sh "echo I am stage 2"
+//             }
+//         }
+//     }
+// }
 
 // In this example, the
 // input
@@ -109,7 +109,39 @@ pipeline {
 // it means there were duplicates, and an error is thrown.
 
 
+pipeline {
+    agent any
 
+    stages {
+        stage('Stage 1') {
+            steps {
+                input {
+                    message 'Approve Stage 1?'
+                    id 'stage1_input'
+                    submitterParameter 'approver'
+                }
+                when {
+                    expression { env.stage1_input == 'APPROVED' }
+                }
+                // Stage 1 actions
+            }
+        }
+
+        stage('Stage 2') {
+            steps {
+                input {
+                    message 'Approve Stage 2?'
+                    id 'stage2_input'
+                    submitterParameter 'approver'
+                }
+                when {
+                    expression { env.stage1_input == 'APPROVED' && env.stage2_input == 'APPROVED' }
+                }
+                // Stage 2 actions
+            }
+        }
+    }
+}
 
 
 
