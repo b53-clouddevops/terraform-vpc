@@ -2,7 +2,7 @@
 // env.REPONAME="terraform-vpc"
 // terraform()
 
-@Library('pipeline-utility-steps') _
+// @Library('pipeline-utility-steps') _
 
 STAGE_R_LOG_FILE = 'stage_R.log'
 
@@ -29,32 +29,37 @@ STAGE_R_LOG_FILE = 'stage_R.log'
             }
 
             stage('R Did you review the plan?') {
-                input {
-                    message 'Did you review'
-                    parameters {
-                        booleanParam(name: 'Apply?', defaultValue: false, description: 'True to proceed further')
-                    }
-                }
-                steps {                     
-                script {
-                    tee(STAGE_R_LOG_FILE) {
-                        sh "echo Proceeding To Apple"
-                        echo 'print some Stage_PLAN log content..'
-                        }
-                    }
-                }
+                // input {
+                //     message 'Did you review'
+                //     parameters {
+                //         booleanParam(name: 'Apply?', defaultValue: false, description: 'True to proceed further')
+                //     }
+                // }
+                steps {       
+                    steps {
+                        input message: 'Approve the build?',
+                        submitter: currentUser(),
+                        approvers: ['alice', 'bob']
+                    }              
+                // script {
+                //     tee(STAGE_R_LOG_FILE) {
+                //         sh "echo Proceeding To Apple"
+                //         echo 'print some Stage_PLAN log content..'
+                //         }
+                //     }
+                // }
             }
 
             stage('Terraform Apply ') {
                 steps {
-                    script {
-                        // search log file for 'Stage_A'
-                        regex = java.util.regex.Pattern.compile('some (Stage_PLAN) log')
-                        matcher = regex.matcher(readFile(STAGE_R_LOG_FILE))
-                        if (matcher.find()) {
-                            echo "found: ${matcher}"
-                        }
-                    }
+                    // script {
+                    //     // search log file for 'Stage_A'
+                    //     regex = java.util.regex.Pattern.compile('some (Stage_PLAN) log')
+                    //     matcher = regex.matcher(readFile(STAGE_R_LOG_FILE))
+                    //     if (matcher.find()) {
+                    //         echo "found: ${matcher}"
+                    //     }
+                    // }
                     sh "terraform ${ACTION} -var-file=env-${ENV}/${ENV}.tfvars -auto-approve"
                     }
                 }
