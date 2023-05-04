@@ -31,7 +31,7 @@
                         booleanParam(name: 'Apply?', defaultValue: false, description: 'True to proceed further')
                     }
                 }
-                steps { sh "Proceeding To Apple" }
+                steps { sh "echo Proceeding To Apple" }
             }
 
             stage('Terraform Apply ') {
