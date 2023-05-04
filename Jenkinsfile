@@ -52,7 +52,7 @@ STAGE_R_LOG_FILE = 'stage_R.log'
                         regex = java.util.regex.Pattern.compile('some (Stage_PLAN) log')
                         matcher = regex.matcher(readFile(STAGE_R_LOG_FILE))
                         if (matcher.find()) {
-                            echo "found: ${matcher.group(1)}"
+                            echo "found: ${matcher}"
                         }
                     }
                     sh "terraform ${ACTION} -var-file=env-${ENV}/${ENV}.tfvars -auto-approve"
