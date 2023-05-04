@@ -39,7 +39,7 @@ STAGE_R_LOG_FILE = 'stage_R.log'
                 script {
                     tee(STAGE_R_LOG_FILE) {
                         sh "echo Proceeding To Apple"
-                        echo 'print some Stage_A log content..'
+                        echo 'print some Stage_PLAN log content..'
                         }
                     }
                 }
@@ -47,6 +47,14 @@ STAGE_R_LOG_FILE = 'stage_R.log'
 
             stage('Terraform Apply ') {
                 steps {
+                    script {
+                        // search log file for 'Stage_A'
+                        regex = java.util.regex.Pattern.compile('some (Stage_PLAN) log')
+                        matcher = regex.matcher(readFile(STAGE_R_LOG_FILE))
+                        if (matcher.find()) {
+                            echo "found: ${matcher.group(1)}"
+                        }
+                    }
                     sh "terraform ${ACTION} -var-file=env-${ENV}/${ENV}.tfvars -auto-approve"
                     }
                 }
