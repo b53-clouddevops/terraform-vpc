@@ -31,7 +31,9 @@
                         booleanParam(name: 'Apply?', defaultValue: false, description: 'True to proceed further')
                     }
                 }
+                steps { sh "Proceeding To Apple" }
             }
+
             stage('Terraform Apply ') {
                 steps {
                     sh "terraform ${ACTION} -var-file=env-${ENV}/${ENV}.tfvars -auto-approve"
