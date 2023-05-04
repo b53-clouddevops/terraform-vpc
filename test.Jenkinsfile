@@ -7,10 +7,9 @@ pipeline {
                     // Capture input directive approval logs to a file
                     // withInputTimeout(time: 30, unit: 'MINUTES') {
                         withEnv(["BUILD_LOG_FILE=${env.WORKSPACE}/build.log"]) {
-                            sh """
-                                echo "Waiting for input..." | tee -a ${BUILD_LOG_FILE}
+
                                 input message: 'Do you want to proceed?', submitter: 'user1', id: 'input-id' | tee -a ${BUILD_LOG_FILE}
-                            """
+
                         }
                     // }
                 }
