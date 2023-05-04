@@ -38,6 +38,7 @@ STAGE_R_LOG_FILE = 'stage_R.log'
                     tee(STAGE_R_LOG_FILE) {
                         sh "echo Proceeding To Apple"
                         echo 'print some Stage_A log content..'
+                        }
                     }
                 }
             }
