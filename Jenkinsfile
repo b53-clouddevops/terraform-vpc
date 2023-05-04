@@ -109,35 +109,41 @@
 // it means there were duplicates, and an error is thrown.
 
 
+def approvers = []
+
 pipeline {
     agent any
-
+    
     stages {
         stage('Stage 1') {
             steps {
-                input {
-                    message 'Approve Stage 1?'
-                    id 'stage1_input'
-                    submitterParameter 'approver'
+                script {
+                    // Add approvers for stage 1
+                    approvers.add('admin')
+                    approvers.add('mvp2612')
                 }
-                when {
-                    expression { env.stage1_input == 'APPROVED' }
-                }
-                // Stage 1 actions
+                input message: 'Proceed with Stage 1?', submitter: approvers.join(', ')
             }
         }
-
+        
         stage('Stage 2') {
             steps {
-                input {
-                    message 'Approve Stage 2?'
-                    id 'stage2_input'
-                    submitterParameter 'approver'
+                script {
+                    // Add approvers for stage 2
+                    approvers.add('user3')
+                    approvers.add('user4')
                 }
-                when {
-                    expression { env.stage1_input == 'APPROVED' && env.stage2_input == 'APPROVED' }
-                }
-                // Stage 2 actions
+                input message: 'Proceed with Stage 2?', submitter: approvers.join(', ')
+            }
+        }
+    }
+    
+    post {
+        always {
+            // Check for unique approvers across all stages
+            def uniqueApprovers = approvers.unique()
+            if (uniqueApprovers.size() != approvers.size()) {
+                error "Approvers must be unique across all stages"
             }
         }
     }
