@@ -20,23 +20,27 @@
 // }
 
 ﻿
-
-stage('SIT Deployment ?'){
-    try {
-        steps{
-            script 
-            {
-            def userInput
-            userInput = input(
-            id: 'Proceed1', message: 'SIT Deployment Approval', parameters: [
-            [$class:
-            'BooleanParameterDefinition', defaultValue: true, description: '', name: 'Please Confirm you agree with this']
-            ])
-            } catch(err) {
+pipeline {
+    agent any 
+    stages {
+        stage('SIT Deployment ?'){
+            try {
+                steps{
+                    script 
+                    {
+                    def userInput
+                    userInput = input(
+                    id: 'Proceed1', message: 'SIT Deployment Approval', parameters: [
+                    [$class:
+                    'BooleanParameterDefinition', defaultValue: true, description: '', name: 'Please Confirm you agree with this']
+                    ])
+                    } catch(err) {
+                    }
+                    def user = err.getCauses ()[0].getUser()
+                    userInput = false
+                    echo "Aborted by: [${user}]"
+                        }
+                    }
+                }
             }
-            def user = err.getCauses ()[0].getUser()
-            userInput = false
-            echo "Aborted by: [${user}]"
         }
-    }
-}
