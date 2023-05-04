@@ -152,58 +152,77 @@
 
 
 
+// pipeline {
+//     agent any
+
+//     stages {
+//         stage('Deploy to Staging') {
+//             steps {
+//                 echo 'Deploying to staging environment...'
+//             }
+//             input {
+//                 message "Do you want to deploy to staging?"
+//                 submitterParameter 'approver_stage1'
+//                 submitterParameter 'approver_stage2'
+//                 submitterParameter 'approver_stage3'
+//                 id 'stage1'
+//                 ok 'Deploy'
+//                 reject 'Cancel'
+//                 additionalParams [
+//                     [$class: 'ChoiceParameter', 
+//                      name: 'environment', 
+//                      choices: ['test', 'prod'], 
+//                      description: 'Choose the environment to deploy to']
+//                 ]
+//                 unique true
+//             }
+//         }
+
+//         stage('Deploy to Production') {
+//             steps {
+//                 echo 'Deploying to production environment...'
+//             }
+//             input {
+//                 message "Do you want to deploy to production?"
+//                 submitterParameter 'approver_stage4'
+//                 submitterParameter 'approver_stage5'
+//                 id 'stage2'
+//                 ok 'Deploy'
+//                 reject 'Cancel'
+//                 additionalParams [
+//                     [$class: 'ChoiceParameter', 
+//                      name: 'environment', 
+//                      choices: ['test', 'prod'], 
+//                      description: 'Choose the environment to deploy to']
+//                 ]
+//                 unique true
+//             }
+//         }
+//     }
+// }
+
+
+
 pipeline {
     agent any
-
     stages {
-        stage('Deploy to Staging') {
+        stage('Stage 1') {
             steps {
-                echo 'Deploying to staging environment...'
-            }
-            input {
-                message "Do you want to deploy to staging?"
-                submitterParameter 'approver_stage1'
-                submitterParameter 'approver_stage2'
-                submitterParameter 'approver_stage3'
-                id 'stage1'
-                ok 'Deploy'
-                reject 'Cancel'
-                additionalParams [
-                    [$class: 'ChoiceParameter', 
-                     name: 'environment', 
-                     choices: ['test', 'prod'], 
-                     description: 'Choose the environment to deploy to']
-                ]
-                unique true
-            }
-        }
-
-        stage('Deploy to Production') {
-            steps {
-                echo 'Deploying to production environment...'
-            }
-            input {
-                message "Do you want to deploy to production?"
-                submitterParameter 'approver_stage4'
-                submitterParameter 'approver_stage5'
-                id 'stage2'
-                ok 'Deploy'
-                reject 'Cancel'
-                additionalParams [
-                    [$class: 'ChoiceParameter', 
-                     name: 'environment', 
-                     choices: ['test', 'prod'], 
-                     description: 'Choose the environment to deploy to']
-                ]
-                unique true
+                script {
+                    // Capture input directive approval logs to a file
+                    withInputTimeout(time: 30, unit: 'MINUTES') {
+                        withEnv(["BUILD_LOG_FILE=${env.WORKSPACE}/build.log"]) {
+                            sh """
+                                echo "Waiting for input..." | tee -a ${BUILD_LOG_FILE}
+                                input message: 'Do you want to proceed?', submitter: 'user1', id: 'input-id' | tee -a ${BUILD_LOG_FILE}
+                            """
+                        }
+                    }
+                }
             }
         }
     }
 }
-
-
-
-
 
 
 
